@@ -1,0 +1,1 @@
+ALTER TABLE public.clinic_settings ADD COLUMN timezone text NOT NULL DEFAULT 'America/Lima';

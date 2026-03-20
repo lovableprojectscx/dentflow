@@ -61,8 +61,8 @@ export function AppointmentCard({
     )}>
       {/* Main row */}
       <div className="flex items-center gap-3 p-4">
-        <div className="w-12 text-center shrink-0">
-          <p className="text-base font-bold text-foreground leading-tight">{time}</p>
+        <div className="w-14 text-center shrink-0">
+          <p className="text-sm font-bold text-foreground leading-tight tabular-nums">{time.slice(0, 5)}</p>
           <p className="text-xs text-muted-foreground">{duration}m</p>
         </div>
         <div className="w-px h-9 bg-border shrink-0" />
@@ -85,11 +85,8 @@ export function AppointmentCard({
         </Badge>
       </div>
 
-      {/* Actions row — always visible on mobile, merged on larger screens */}
-      <div className={cn(
-        "flex items-center gap-2 px-4 pb-3 pt-0",
-        !patientPhone && !isSolicitud && "hidden"
-      )}>
+      {/* Actions row — badge on mobile + action buttons */}
+      <div className="flex items-center gap-2 px-4 pb-3 pt-0">
         {/* Badge on mobile */}
         <Badge variant="outline" className={cn("text-xs font-medium sm:hidden mr-auto", config.className)}>
           {config.label}

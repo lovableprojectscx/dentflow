@@ -36,6 +36,20 @@ function generateSlots(open: string, close: string) {
   return slots;
 }
 
+function toMinutes(t: string) {
+  const [h, m] = t.slice(0, 5).split(":").map(Number);
+  return h * 60 + m;
+}
+
+function isSlotOccupied(slot: string, bookedSlots: BookedSlot[]): boolean {
+  const slotMin = toMinutes(slot);
+  return bookedSlots.some(b => {
+    const start = toMinutes(b.time);
+    const end = start + b.duration;
+    return slotMin >= start && slotMin < end;
+  });
+}
+
 export default function PublicBooking() {
   const { doctorId } = useParams<{ doctorId: string }>();
   const [clinic, setClinic] = useState<ClinicInfo | null>(null);
@@ -93,7 +107,6 @@ export default function PublicBooking() {
   }
 
   const allSlots = generateSlots(clinic.opening_time, clinic.closing_time);
-  const bookedTimes = new Set(bookedSlots.map(s => s.time.slice(0, 5)));
 
   const dayOfWeek = new Date(selectedDate + "T12:00:00").getDay();
   const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
@@ -256,7 +269,7 @@ export default function PublicBooking() {
                 <p className="text-sm text-muted-foreground capitalize">{formatDate(selectedDate)}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {allSlots.map(slot => {
-                    const isBooked = bookedTimes.has(slot);
+                    const isBooked = isSlotOccupied(slot, bookedSlots);
                     return (
                       <button
                         key={slot}

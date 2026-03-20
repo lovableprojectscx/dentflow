@@ -22,11 +22,12 @@ export default function Dashboard() {
 
   const confirmed = todayAppointments.filter(a => a.status === "confirmed").length;
   const completed = allAppointments.filter(a => a.status === "completed").length;
-  const upcoming = allAppointments.filter(a => a.date > today).sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
-  const nextApt = todayAppointments.sort((a, b) => a.time.localeCompare(b.time))[0];
-  const pendingPayments = allAppointments.filter(a =>
-    (a as any).source === "public" && a.status === "pending"
-  );
+  const isPublicPending = (a: any) => a.source === "public" && a.status === "pending";
+  const upcoming = allAppointments
+    .filter(a => a.date > today && !isPublicPending(a as any))
+    .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  const nextApt = [...todayAppointments].sort((a, b) => a.time.localeCompare(b.time))[0];
+  const pendingPayments = allAppointments.filter(a => isPublicPending(a as any));
 
   const handleConfirmPayment = async (id: string) => {
     try {
@@ -88,7 +89,7 @@ export default function Dashboard() {
         <StatCard title="Citas Hoy" value={todayAppointments.length} subtitle={`${confirmed} confirmadas`} icon={Calendar} />
         <StatCard title="Pacientes" value={patients.length} icon={Users} />
         <StatCard title="Completadas" value={completed} subtitle="Total" icon={CheckCircle} />
-        <StatCard title="Próxima Cita" value={nextApt?.time ?? "—"} subtitle={nextApt ? (nextApt as any).patients?.name : ""} icon={Clock} />
+        <StatCard title="Próxima Cita" value={nextApt?.time?.slice(0, 5) ?? "—"} subtitle={nextApt ? (nextApt as any).patients?.name : ""} icon={Clock} />
       </div>
 
       <BookingLinkCard />
@@ -97,7 +98,7 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center gap-2 mb-4">
             <AlertCircle className="w-5 h-5 text-warning" />
-            <h2 className="text-lg font-semibold text-foreground">Solicitudes pendientes de pago</h2>
+            <h2 className="text-lg font-semibold text-foreground">Nuevas solicitudes de cita</h2>
             <span className="ml-auto bg-warning/10 text-warning text-xs font-bold px-2 py-0.5 rounded-full border border-warning/20">
               {pendingPayments.length}
             </span>
@@ -169,7 +170,7 @@ export default function Dashboard() {
         ) : todayAppointments.length > 0 ? (
           <div className="space-y-3">
             {todayAppointments.map(a => (
-              <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} paymentStatus={(a as any).payment_status} onConfirm={handleConfirmPayment} onCancel={handleCancelAppointment} />
+              <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} onConfirm={handleConfirmPayment} onCancel={handleCancelAppointment} />
             ))}
           </div>
         ) : (
@@ -185,7 +186,7 @@ export default function Dashboard() {
           <h2 className="text-lg font-semibold text-foreground mb-4">Próximas Citas</h2>
           <div className="space-y-3">
             {upcoming.slice(0, 5).map(a => (
-              <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} paymentStatus={(a as any).payment_status} onConfirm={handleConfirmPayment} onCancel={handleCancelAppointment} />
+              <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} onConfirm={handleConfirmPayment} onCancel={handleCancelAppointment} />
             ))}
           </div>
         </div>

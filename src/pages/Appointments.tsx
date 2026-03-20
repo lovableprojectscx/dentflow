@@ -67,7 +67,7 @@ export default function Appointments() {
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 capitalize">{formatDate(date)}</h3>
             <div className="space-y-3">
               {apts.sort((a, b) => a.time.localeCompare(b.time)).map(a => (
-                <AppointmentCard key={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} />
+                <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} notes={(a as any).notes} />
               ))}
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,19 @@ export function EditAppointmentDialog({ open, onClose, appointment }: EditAppoin
   const [status, setStatus] = useState(appointment.status);
   const [notes, setNotes] = useState(appointment.notes ?? "");
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  // Reset state when a different appointment is opened
+  useEffect(() => {
+    if (open) {
+      setDate(appointment.date);
+      setTime(appointment.time.slice(0, 5));
+      setType(appointment.type);
+      setDuration(String(appointment.duration));
+      setStatus(appointment.status);
+      setNotes(appointment.notes ?? "");
+      setConfirmDelete(false);
+    }
+  }, [open, appointment.id]);
 
   const update = useUpdateAppointment();
   const remove = useDeleteAppointment();

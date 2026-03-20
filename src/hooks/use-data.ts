@@ -86,6 +86,33 @@ export function useClinicSettings() {
   });
 }
 
+export function useDeleteAppointment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("appointments").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
+  });
+}
+
+export function usePatientAppointments(patientId: string | null) {
+  return useQuery({
+    queryKey: ["appointments", "patient", patientId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("*")
+        .eq("patient_id", patientId!)
+        .order("date", { ascending: false });
+      if (error) throw error;
+      return data as Appointment[];
+    },
+    enabled: !!patientId,
+  });
+}
+
 export function useUpsertClinicSettings() {
   const qc = useQueryClient();
   const { user } = useAuth();

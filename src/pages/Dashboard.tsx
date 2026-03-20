@@ -1,4 +1,4 @@
-import { Calendar, Users, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { Calendar, Users, CheckCircle, Clock, AlertCircle, Bell, MessageCircle } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { AppointmentCard } from "@/components/AppointmentCard";
 import { NewAppointmentDialog } from "@/components/NewAppointmentDialog";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 export default function Dashboard() {
   const today = new Date().toISOString().split("T")[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
   const { data: todayAppointments = [], isLoading } = useAppointments(today);
   const { data: allAppointments = [] } = useAppointments();
   const { data: patients = [] } = usePatients();
@@ -43,6 +44,18 @@ export default function Dashboard() {
     } catch {
       toast.error("Error al rechazar solicitud");
     }
+  };
+
+  const tomorrowAppointments = allAppointments.filter(
+    a => a.date === tomorrow && a.status !== "cancelled"
+  );
+
+  const handleReminder = (name: string, phone: string, time: string, type: string) => {
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
+    const message = encodeURIComponent(
+      `¡Hola ${name}! 👋\n\nLe recordamos su cita de *mañana* a las *${time.slice(0, 5)}* para *${type}*.\n\n¡Le esperamos! Si necesita reprogramar, por favor avísenos. 🦷`
+    );
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, "_blank");
   };
 
   const clinicName = settings?.clinic_name || "Doctor";
@@ -110,6 +123,41 @@ export default function Dashboard() {
                 onCancel={handleCancelAppointment}
               />
             ))}
+          </div>
+        </div>
+      )}
+
+      {tomorrowAppointments.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Bell className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">Recordatorios de mañana</h2>
+            <span className="ml-auto text-xs text-muted-foreground">{tomorrowAppointments.length} cita{tomorrowAppointments.length !== 1 ? "s" : ""}</span>
+          </div>
+          <div className="space-y-2">
+            {tomorrowAppointments.map(a => {
+              const name = (a as any).patients?.name ?? "—";
+              const phone = (a as any).patients?.phone ?? "";
+              return (
+                <div key={a.id} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{name}</p>
+                    <p className="text-xs text-muted-foreground">{a.time.slice(0, 5)} · {a.type}</p>
+                  </div>
+                  {phone ? (
+                    <button
+                      onClick={() => handleReminder(name, phone, a.time, a.type)}
+                      className="shrink-0 flex items-center gap-1.5 text-xs font-medium text-success border border-success/30 bg-success/5 hover:bg-success/15 px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      Recordar
+                    </button>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Sin teléfono</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

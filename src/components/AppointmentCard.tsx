@@ -1,8 +1,10 @@
-import { Clock, User, MessageCircle, CheckCircle, X } from "lucide-react";
+import { useState } from "react";
+import { Clock, User, MessageCircle, CheckCircle, X, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { EditAppointmentDialog } from "./EditAppointmentDialog";
 
 const statusConfig = {
   confirmed: { label: "Confirmada", className: "bg-success/10 text-success border-success/20" },
@@ -21,6 +23,7 @@ interface AppointmentCardProps {
   status: string;
   date?: string;
   source?: string;
+  notes?: string | null;
   onConfirm?: (id: string) => void;
   onCancel?: (id: string) => void;
 }
@@ -35,9 +38,11 @@ export function AppointmentCard({
   status,
   date,
   source,
+  notes,
   onConfirm,
   onCancel,
 }: AppointmentCardProps) {
+  const [editOpen, setEditOpen] = useState(false);
   const statusKey = status as keyof typeof statusConfig;
   const config = statusConfig[statusKey] || statusConfig.pending;
   const isSolicitud = source === "public" && status === "pending";
@@ -55,6 +60,14 @@ export function AppointmentCard({
   };
 
   return (
+    <>
+    {id && (
+      <EditAppointmentDialog
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        appointment={{ id, date: date ?? "", time, type, duration, status, notes }}
+      />
+    )}
     <div className={cn(
       "bg-card rounded-xl border transition-shadow animate-fade-in",
       isSolicitud ? "border-warning/40 hover:shadow-md" : "border-border hover:shadow-sm"
@@ -92,6 +105,17 @@ export function AppointmentCard({
           {config.label}
         </Badge>
         <div className="flex items-center gap-2 ml-auto">
+          {id && !isSolicitud && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="h-8 gap-1.5 text-muted-foreground hover:text-foreground">
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span className="text-xs hidden sm:inline">Editar</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Editar o eliminar cita</TooltipContent>
+            </Tooltip>
+          )}
           {patientPhone && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -143,5 +167,6 @@ export function AppointmentCard({
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -14,6 +14,7 @@ import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import PublicBooking from "./pages/PublicBooking";
 import WaitingList from "./pages/WaitingList";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ function ProtectedRoutes() {
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/waiting-list" element={<WaitingList />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>

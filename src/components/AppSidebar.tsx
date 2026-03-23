@@ -1,4 +1,4 @@
-import { Calendar, Users, LayoutDashboard, Clock, Settings, LogOut, ListOrdered } from "lucide-react";
+import { Calendar, Users, LayoutDashboard, Clock, Settings, LogOut, ListOrdered, ShieldAlert } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,7 +15,7 @@ const navItems = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const { data: allAppointments = [] } = useAppointments();
 
   const waitingCount = allAppointments.filter(
@@ -58,6 +58,15 @@ export function AppSidebar() {
             </NavLink>
           );
         })}
+        {isAdmin && (
+          <NavLink to="/admin" className={cn(
+            "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
+            location.pathname === "/admin" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          )}>
+            <ShieldAlert className="w-5 h-5 shrink-0" />
+            <span className="flex-1">Admin Empresas</span>
+          </NavLink>
+        )}
       </nav>
 
       <div className="p-4 border-t border-border space-y-2">

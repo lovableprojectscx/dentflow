@@ -1,5 +1,5 @@
 import { Clock, Users, MessageCircle, CheckCircle, X, Calendar, Phone } from "lucide-react";
-import { useAppointments, useUpdateAppointment } from "@/hooks/use-data";
+import { useAppointments, useUpdateAppointment, useClinicSettings } from "@/hooks/use-data";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 export default function WaitingList() {
   const { data: allAppointments = [], isLoading } = useAppointments();
+  const { data: settings } = useClinicSettings();
   const updateAppointment = useUpdateAppointment();
 
   const waitingList = allAppointments
@@ -36,9 +37,29 @@ export default function WaitingList() {
     const dateText = new Date(date + "T12:00:00").toLocaleDateString("es-ES", {
       weekday: "long", day: "numeric", month: "long",
     });
-    const message = encodeURIComponent(
-      `¡Hola ${patientName}! 👋\n\nLe escribimos de la clínica para coordinar su cita:\n📅 ${dateText}\n🕐 ${time}\n💊 ${type}\n\nPara confirmar su cita, por favor realice el pago y envíenos el comprobante. ¡Gracias!`
-    );
+    
+    let paymentLines: string[] = [];
+    if (settings && ((settings as any).payment_bcp || (settings as any).payment_yape || (settings as any).payment_plin)) {
+      paymentLines.push("");
+      paymentLines.push("*Datos de pago para confirmar:*");
+      if ((settings as any).payment_bcp) paymentLines.push(`🏦 BCP: ${(settings as any).payment_bcp}`);
+      if ((settings as any).payment_yape) paymentLines.push(`📲 Yape: ${(settings as any).payment_yape}`);
+      if ((settings as any).payment_plin) paymentLines.push(`📲 Plin: ${(settings as any).payment_plin}`);
+    }
+
+    const lines = [
+      `¡Hola ${patientName}! \u{1F44B}`,
+      "",
+      "Le escribimos de la clínica para coordinar su cita:",
+      `\u{1F4C5} Fecha: ${dateText}`,
+      `\u{1F550} Hora: ${time}`,
+      `\u{1F48A} Tratamiento: ${type}`,
+      ...paymentLines,
+      "",
+      "Para confirmar su cita, por favor envíenos el comprobante de pago. ¡Gracias!"
+    ];
+
+    const message = encodeURIComponent(lines.join('\r\n'));
     window.open(`https://wa.me/${cleanPhone}?text=${message}`, "_blank");
   };
 

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { useClinicSettings, useUpsertClinicSettings } from "@/hooks/use-data";
 import { TIMEZONES } from "@/lib/constants";
+import { supabase } from "@/integrations/supabase/client";
 
 const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
@@ -22,6 +23,9 @@ export default function SettingsPage() {
   const [closingTime, setClosingTime] = useState("18:00");
   const [workingDays, setWorkingDays] = useState([true, true, true, true, true, true, false]);
   const [timezone, setTimezone] = useState("America/Lima");
+  const [paymentBcp, setPaymentBcp] = useState("");
+  const [paymentYape, setPaymentYape] = useState("");
+  const [paymentPlin, setPaymentPlin] = useState("");
 
   useEffect(() => {
     if (settings) {
@@ -32,8 +36,21 @@ export default function SettingsPage() {
       setClosingTime(settings.closing_time ?? "18:00");
       setWorkingDays(settings.working_days ?? [true, true, true, true, true, true, false]);
       setTimezone((settings as any).timezone ?? "America/Lima");
+      setPaymentBcp((settings as any).payment_bcp ?? "");
+      setPaymentYape((settings as any).payment_yape ?? "");
+      setPaymentPlin((settings as any).payment_plin ?? "");
     }
   }, [settings]);
+
+  useEffect(() => {
+    // Check if coming back from Google Auth
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('calendar_connect') === 'success') {
+      toast.success('Google Calendar conectado exitosamente');
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   const handleSave = async () => {
     try {
@@ -45,6 +62,9 @@ export default function SettingsPage() {
         closing_time: closingTime,
         working_days: workingDays,
         timezone,
+        payment_bcp: paymentBcp,
+        payment_yape: paymentYape,
+        payment_plin: paymentPlin,
       } as any);
       toast.success("Configuración guardada");
     } catch (error: any) {
@@ -53,6 +73,22 @@ export default function SettingsPage() {
   };
 
   if (isLoading) return <div className="p-8 text-muted-foreground">Cargando...</div>;
+
+  const handleConnectCalendar = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('google-calendar-auth?action=connect', {
+        method: 'GET'
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No se recibió URL de autenticación");
+      }
+    } catch (error: any) {
+      toast.error('Error al iniciar conexión con Google: ' + error.message);
+    }
+  };
 
   return (
     <div className="p-4 md:p-8 max-w-3xl mx-auto space-y-6 md:space-y-8">
@@ -116,6 +152,38 @@ export default function SettingsPage() {
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">Los horarios de citas se mostrarán en esta zona horaria</p>
+        </div>
+      </section>
+
+      <section className="bg-card border border-border rounded-xl p-6 space-y-4">
+        <h2 className="font-semibold text-foreground">Datos de Pago</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Cuenta BCP</Label>
+            <Input placeholder="Ej. 191-00000000-0-00 (Juan Pérez)" value={paymentBcp} onChange={e => setPaymentBcp(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label>Número Yape</Label>
+            <Input placeholder="Ej. 999 888 777 (Juan Pérez)" value={paymentYape} onChange={e => setPaymentYape(e.target.value)} />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Número Plin</Label>
+            <Input placeholder="Ej. 999 888 777 (Juan Pérez)" value={paymentPlin} onChange={e => setPaymentPlin(e.target.value)} />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">Estos datos se enviarán por WhatsApp a los pacientes de la lista de espera para que confirmen su cita.</p>
+      </section>
+
+      <section className="bg-card border border-border rounded-xl p-6 space-y-4">
+        <h2 className="font-semibold text-foreground">Integraciones</h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="space-y-1">
+              <p className="font-medium">Google Calendar</p>
+              <p className="text-sm text-muted-foreground">Sincroniza tus citas automáticamente con Google Calendar</p>
+            </div>
+            <Button variant="outline" onClick={handleConnectCalendar}>Conectar Google</Button>
+          </div>
         </div>
       </section>
 

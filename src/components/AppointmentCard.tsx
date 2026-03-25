@@ -53,9 +53,19 @@ export function AppointmentCard({
     const dateText = date
       ? new Date(date + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })
       : "próximamente";
-    const message = encodeURIComponent(
-      `¡Hola ${patientName}! 👋\n\nLe escribimos de la clínica para confirmar su cita:\n📅 ${dateText}\n🕐 ${time}\n💊 ${type}\n\n¿Confirma su asistencia?`
-    );
+      
+    const lines = [
+      `¡Hola ${patientName}! \u{1F44B}`,
+      "",
+      "Le escribimos de la clínica para confirmar su cita:",
+      `\u{1F4C5} Fecha: ${dateText}`,
+      `\u{1F550} Hora: ${time}`,
+      `\u{1F48A} Tratamiento: ${type}`,
+      "",
+      "¿Confirma su asistencia?"
+    ];
+
+    const message = encodeURIComponent(lines.join('\r\n'));
     window.open(`https://wa.me/${cleanPhone}?text=${message}`, "_blank");
   };
 

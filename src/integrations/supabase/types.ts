@@ -19,9 +19,12 @@ export type Database = {
           created_at: string
           date: string
           duration: number
+          google_event_id: string | null
           id: string
           notes: string | null
           patient_id: string
+          payment_status: string
+          source: string
           status: string
           time: string
           type: string
@@ -32,9 +35,12 @@ export type Database = {
           created_at?: string
           date: string
           duration?: number
+          google_event_id?: string | null
           id?: string
           notes?: string | null
           patient_id: string
+          payment_status?: string
+          source?: string
           status?: string
           time: string
           type: string
@@ -45,9 +51,12 @@ export type Database = {
           created_at?: string
           date?: string
           duration?: number
+          google_event_id?: string | null
           id?: string
           notes?: string | null
           patient_id?: string
+          payment_status?: string
+          source?: string
           status?: string
           time?: string
           type?: string
@@ -140,6 +149,39 @@ export type Database = {
           name?: string
           notes?: string | null
           phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_integrations: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          provider: string
+          refresh_token: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          provider: string
+          refresh_token?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          provider?: string
+          refresh_token?: string | null
           updated_at?: string
           user_id?: string
         }

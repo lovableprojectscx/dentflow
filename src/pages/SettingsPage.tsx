@@ -26,6 +26,8 @@ export default function SettingsPage() {
   const [paymentBcp, setPaymentBcp] = useState("");
   const [paymentYape, setPaymentYape] = useState("");
   const [paymentPlin, setPaymentPlin] = useState("");
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const [isCheckingGoogle, setIsCheckingGoogle] = useState(true);
 
   useEffect(() => {
     if (settings) {
@@ -50,6 +52,29 @@ export default function SettingsPage() {
       // Clean URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+    
+    // Check integration status
+    const checkIntegration = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data, error } = await supabase
+            .from('user_integrations')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('provider', 'google_calendar')
+            .maybeSingle();
+          
+          if (data) setIsGoogleConnected(true);
+        }
+      } catch (error) {
+        console.error('Error checking integration:', error);
+      } finally {
+        setIsCheckingGoogle(false);
+      }
+    };
+
+    checkIntegration();
   }, []);
 
   const handleSave = async () => {
@@ -182,7 +207,19 @@ export default function SettingsPage() {
               <p className="font-medium">Google Calendar</p>
               <p className="text-sm text-muted-foreground">Sincroniza tus citas automáticamente con Google Calendar</p>
             </div>
-            <Button variant="outline" onClick={handleConnectCalendar}>Conectar Google</Button>
+            {isCheckingGoogle ? (
+              <span className="text-sm text-muted-foreground">Verificando...</span>
+            ) : isGoogleConnected ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-green-600 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
+                  Conectado
+                </span>
+                <Button variant="ghost" size="sm" onClick={handleConnectCalendar} className="text-xs text-muted-foreground underline">Reconectar</Button>
+              </div>
+            ) : (
+              <Button variant="outline" onClick={handleConnectCalendar}>Conectar Google</Button>
+            )}
           </div>
         </div>
       </section>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, CheckCircle, Calendar, User, Phone, ArrowLeft } from "lucide-react";
+import { Clock, CheckCircle, Calendar, User, Phone, ArrowLeft, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -63,8 +63,8 @@ export default function PublicBooking() {
 
   const [step, setStep] = useState<"slots" | "form" | "success">("slots");
   const [name, setName] = useState("");
-  const [email] = useState("");
   const [phone, setPhone] = useState("");
+  const [dni, setDni] = useState("");
   const [type, setType] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -119,8 +119,12 @@ export default function PublicBooking() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !phone || !type) {
-      toast.error("Complete todos los campos");
+    if (!name || !phone || !dni || !type) {
+      toast.error("Complete todos los campos requeridos");
+      return;
+    }
+    if (dni.length < 6 || dni.length > 15) {
+      toast.error("DNI inválido — debe tener entre 6 y 15 dígitos");
       return;
     }
     setSubmitting(true);
@@ -128,11 +132,12 @@ export default function PublicBooking() {
       const { data, error } = await supabase.rpc("create_public_booking", {
         p_doctor_id: doctorId!,
         p_patient_name: name,
-        p_patient_email: email,
+        p_patient_email: "",
         p_patient_phone: phone,
         p_date: selectedDate,
         p_time: selectedTime,
         p_type: type,
+        p_patient_dni: dni,
       });
 
       if (error) throw error;
@@ -156,6 +161,15 @@ export default function PublicBooking() {
     return new Date(d + "T12:00:00").toLocaleDateString("es-ES", {
       weekday: "long", day: "numeric", month: "long",
     });
+  };
+
+  const resetForm = () => {
+    setStep("slots");
+    setSelectedTime("");
+    setName("");
+    setPhone("");
+    setDni("");
+    setType("");
   };
 
   return (
@@ -193,7 +207,7 @@ export default function PublicBooking() {
             <p className="text-sm text-muted-foreground mb-6">
               La clínica confirmará tu cita por WhatsApp pronto.
             </p>
-            <Button variant="outline" onClick={() => { setStep("slots"); setSelectedTime(""); setName(""); setPhone(""); setType(""); }}>
+            <Button variant="outline" onClick={resetForm}>
               Agendar otra cita
             </Button>
           </div>
@@ -214,15 +228,41 @@ export default function PublicBooking() {
               <h2 className="text-lg font-semibold text-foreground">Tus datos</h2>
 
               <div className="space-y-2">
-                <Label className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" /> Nombre completo</Label>
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder="Tu nombre" required />
+                <Label className="flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5" /> Nombre completo <span className="text-destructive">*</span>
+                </Label>
+                <Input value={name} onChange={e => setName(e.target.value)} placeholder="Tu nombre completo" required />
               </div>
-              <div className="space-y-2">
-                <Label className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> Teléfono (WhatsApp)</Label>
-                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+51 999 999 999" required />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5" /> Teléfono (WhatsApp) <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    placeholder="+51 999 999 999"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5" /> DNI / Documento <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    value={dni}
+                    onChange={e => setDni(e.target.value.replace(/\D/g, ""))}
+                    placeholder="Ej: 12345678"
+                    maxLength={15}
+                    inputMode="numeric"
+                    required
+                  />
+                </div>
               </div>
+
               <div className="space-y-2">
-                <Label>Tipo de consulta</Label>
+                <Label>Tipo de consulta <span className="text-destructive">*</span></Label>
                 <Select value={type} onValueChange={setType}>
                   <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                   <SelectContent>
@@ -233,7 +273,11 @@ export default function PublicBooking() {
                 </Select>
               </div>
 
-              <Button type="submit" className="w-full" disabled={submitting}>
+              <p className="text-xs text-muted-foreground">
+                <span className="text-destructive">*</span> Campos obligatorios
+              </p>
+
+              <Button type="submit" className="w-full" disabled={submitting || !name || !phone || !dni || !type}>
                 {submitting ? "Enviando solicitud..." : "Solicitar Cita"}
               </Button>
             </form>
@@ -260,38 +304,41 @@ export default function PublicBooking() {
 
             {!isWorkingDay ? (
               <div className="text-center py-12 text-muted-foreground">
-                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-40" />
-                <p>La clínica no atiende este día</p>
-                <p className="text-sm mt-1">Selecciona otro día</p>
+                <Clock className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="font-medium text-foreground">Día no laborable</p>
+                <p className="text-sm mt-1">La clínica no atiende este día. Selecciona otro.</p>
               </div>
             ) : (
-              <>
-                <p className="text-sm text-muted-foreground capitalize">{formatDate(selectedDate)}</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              <div>
+                <p className="text-sm font-medium text-foreground mb-3 flex items-center gap-1.5">
+                  <Clock className="w-4 h-4" /> Horarios disponibles
+                </p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                   {allSlots.map(slot => {
-                    const isBooked = isSlotOccupied(slot, bookedSlots);
+                    const occupied = isSlotOccupied(slot, bookedSlots);
                     return (
                       <button
                         key={slot}
-                        disabled={isBooked}
+                        disabled={occupied}
                         onClick={() => handleSelectTime(slot)}
                         className={cn(
-                          "flex items-center gap-2 p-3 rounded-lg border transition-all text-left",
-                          isBooked
-                            ? "border-border bg-muted/50 opacity-50 cursor-not-allowed"
-                            : "border-success/30 bg-success/5 hover:bg-success/15 hover:border-success/50 cursor-pointer"
+                          "py-3 rounded-xl text-sm font-semibold border transition-all",
+                          occupied
+                            ? "bg-muted text-muted-foreground border-border cursor-not-allowed opacity-50 line-through"
+                            : "bg-card text-foreground border-border hover:border-primary hover:bg-primary/5 hover:text-primary active:scale-95"
                         )}
                       >
-                        <Clock className={cn("w-4 h-4", isBooked ? "text-muted-foreground" : "text-success")} />
-                        <span className={cn("font-medium text-sm", isBooked ? "text-muted-foreground" : "text-foreground")}>
-                          {slot}
-                        </span>
-                        {isBooked && <span className="text-xs text-muted-foreground ml-auto">Ocupado</span>}
+                        {slot}
                       </button>
                     );
                   })}
                 </div>
-              </>
+                {allSlots.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    No hay horarios disponibles para este día.
+                  </p>
+                )}
+              </div>
             )}
           </div>
         )}

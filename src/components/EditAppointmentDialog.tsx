@@ -8,6 +8,7 @@ import { Trash2 } from "lucide-react";
 import { useUpdateAppointment, useDeleteAppointment } from "@/hooks/use-data";
 import { toast } from "sonner";
 import { APPOINTMENT_TYPES } from "@/lib/constants";
+import { FollowUpAlert } from "./FollowUpAlert";
 
 interface EditAppointmentDialogProps {
   open: boolean;
@@ -20,6 +21,9 @@ interface EditAppointmentDialogProps {
     duration: number;
     status: string;
     notes?: string | null;
+    patientId: string;
+    patientName: string;
+    patientPhone?: string | null;
   };
 }
 
@@ -38,6 +42,7 @@ export function EditAppointmentDialog({ open, onClose, appointment }: EditAppoin
   const [status, setStatus] = useState(appointment.status);
   const [notes, setNotes] = useState(appointment.notes ?? "");
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showFollowUp, setShowFollowUp] = useState(false);
 
   // Reset state when a different appointment is opened
   useEffect(() => {
@@ -59,7 +64,11 @@ export function EditAppointmentDialog({ open, onClose, appointment }: EditAppoin
     try {
       await update.mutateAsync({ id: appointment.id, date, time, type, duration: parseInt(duration), status, notes: notes || null });
       toast.success("Cita actualizada");
-      onClose();
+      if (status === "completed" && appointment.status !== "completed") {
+        setShowFollowUp(true);
+      } else {
+        onClose();
+      }
     } catch {
       toast.error("Error al actualizar");
     }
@@ -82,6 +91,14 @@ export function EditAppointmentDialog({ open, onClose, appointment }: EditAppoin
         <DialogHeader>
           <DialogTitle>Editar Cita</DialogTitle>
         </DialogHeader>
+
+        <FollowUpAlert
+          open={showFollowUp}
+          onClose={onClose}
+          patientId={appointment.patientId}
+          patientName={appointment.patientName}
+          patientPhone={appointment.patientPhone}
+        />
         <div className="space-y-4 mt-2">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">

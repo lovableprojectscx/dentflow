@@ -1,9 +1,12 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Phone, Mail, User } from "lucide-react";
-import { usePatientAppointments } from "@/hooks/use-data";
 import { cn } from "@/lib/utils";
 import type { Patient } from "@/hooks/use-data";
+import { useState } from "react";
+import { EditPatientDialog } from "./EditPatientDialog";
+import { CreditCard, Pencil, User, Phone, Mail, Calendar, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { usePatientAppointments } from "@/hooks/use-data";
 
 const statusConfig = {
   confirmed: { label: "Confirmada", className: "bg-success/10 text-success border-success/20" },
@@ -18,6 +21,7 @@ interface PatientHistoryModalProps {
 }
 
 export function PatientHistoryModal({ patient, onClose }: PatientHistoryModalProps) {
+  const [editOpen, setEditOpen] = useState(false);
   const { data: appointments = [], isLoading } = usePatientAppointments(patient?.id ?? null);
 
   const formatDate = (d: string) =>
@@ -26,9 +30,27 @@ export function PatientHistoryModal({ patient, onClose }: PatientHistoryModalPro
   return (
     <Dialog open={!!patient} onOpenChange={(v) => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col">
-        <DialogHeader>
+        <DialogHeader className="flex flex-row items-center justify-between pr-8">
           <DialogTitle>Historial del Paciente</DialogTitle>
+          {patient && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={() => setEditOpen(true)}
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
+          )}
         </DialogHeader>
+
+        {patient && (
+          <EditPatientDialog 
+            open={editOpen} 
+            onClose={() => setEditOpen(false)} 
+            patient={patient} 
+          />
+        )}
 
         {patient && (
           <div className="flex flex-col gap-4 overflow-hidden">
@@ -48,6 +70,11 @@ export function PatientHistoryModal({ patient, onClose }: PatientHistoryModalPro
                   {patient.email && (
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Mail className="w-3 h-3" />{patient.email}
+                    </span>
+                  )}
+                  {patient.dni && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <CreditCard className="w-3 h-3" />{patient.dni}
                     </span>
                   )}
                 </div>

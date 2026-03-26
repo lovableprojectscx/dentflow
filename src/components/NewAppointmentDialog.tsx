@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,9 +9,24 @@ import { usePatients, useCreateAppointment } from "@/hooks/use-data";
 import { toast } from "sonner";
 import { APPOINTMENT_TYPES } from "@/lib/constants";
 
-export function NewAppointmentDialog() {
-  const [open, setOpen] = useState(false);
-  const [patientId, setPatientId] = useState("");
+interface NewAppointmentDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  initialPatientId?: string;
+  initialPatientName?: string;
+}
+
+export function NewAppointmentDialog({ 
+  open: propOpen, 
+  onOpenChange, 
+  initialPatientId, 
+  initialPatientName 
+}: NewAppointmentDialogProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = propOpen !== undefined ? propOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
+
+  const [patientId, setPatientId] = useState(initialPatientId || "");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [type, setType] = useState("");
@@ -19,6 +34,11 @@ export function NewAppointmentDialog() {
 
   const { data: patients } = usePatients();
   const createAppointment = useCreateAppointment();
+
+  // Update patientId if prop changes
+  useEffect(() => {
+    if (initialPatientId) setPatientId(initialPatientId);
+  }, [initialPatientId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

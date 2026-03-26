@@ -122,6 +122,7 @@ export default function Dashboard() {
                 paymentStatus={(a as any).payment_status}
                 onConfirm={handleConfirmPayment}
                 onCancel={handleCancelAppointment}
+                patientId={(a as any).patient_id}
               />
             ))}
           </div>
@@ -170,7 +171,7 @@ export default function Dashboard() {
         ) : todayAppointments.length > 0 ? (
           <div className="space-y-3">
             {todayAppointments.map(a => (
-              <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} onConfirm={handleConfirmPayment} onCancel={handleCancelAppointment} />
+              <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} patientId={(a as any).patient_id} onConfirm={handleConfirmPayment} onCancel={handleCancelAppointment} />
             ))}
           </div>
         ) : (
@@ -186,7 +187,7 @@ export default function Dashboard() {
           <h2 className="text-lg font-semibold text-foreground mb-4">Próximas Citas</h2>
           <div className="space-y-3">
             {upcoming.slice(0, 5).map(a => (
-              <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} onConfirm={handleConfirmPayment} onCancel={handleCancelAppointment} />
+              <AppointmentCard key={a.id} id={a.id} time={a.time} duration={a.duration} patientName={(a as any).patients?.name ?? "—"} patientPhone={(a as any).patients?.phone} type={a.type} status={a.status} date={a.date} source={(a as any).source} patientId={(a as any).patient_id} onConfirm={handleConfirmPayment} onCancel={handleCancelAppointment} />
             ))}
           </div>
         </div>

@@ -27,6 +27,7 @@ interface AppointmentCardProps {
   paymentStatus?: string;
   onConfirm?: (id: string) => void;
   onCancel?: (id: string) => void;
+  patientId?: string;
 }
 
 export function AppointmentCard({
@@ -43,6 +44,7 @@ export function AppointmentCard({
   paymentStatus,
   onConfirm,
   onCancel,
+  patientId,
 }: AppointmentCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const statusKey = status as keyof typeof statusConfig;
@@ -77,7 +79,18 @@ export function AppointmentCard({
       <EditAppointmentDialog
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        appointment={{ id, date: date ?? "", time, type, duration, status, notes }}
+        appointment={{ 
+          id, 
+          date: date ?? "", 
+          time, 
+          type, 
+          duration, 
+          status, 
+          notes,
+          patientId: patientId ?? "",
+          patientName,
+          patientPhone
+        }}
       />
     )}
     <div className={cn(

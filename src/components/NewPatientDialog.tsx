@@ -12,6 +12,7 @@ export function NewPatientDialog() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [dni, setDni] = useState("");
 
   const createPatient = useCreatePatient();
 
@@ -20,10 +21,15 @@ export function NewPatientDialog() {
     if (!name) { toast.error("El nombre es obligatorio"); return; }
 
     try {
-      await createPatient.mutateAsync({ name, email: email || null, phone: phone || null });
+      await createPatient.mutateAsync({ 
+        name, 
+        email: email || null, 
+        phone: phone || null,
+        dni: dni || null
+      });
       toast.success("Paciente agregado");
       setOpen(false);
-      setName(""); setEmail(""); setPhone("");
+      setName(""); setEmail(""); setPhone(""); setDni("");
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -46,13 +52,21 @@ export function NewPatientDialog() {
             <Label>Nombre completo</Label>
             <Input value={name} onChange={e => setName(e.target.value)} placeholder="Nombre del paciente" required />
           </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Teléfono</Label>
+              <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+51 999 999 999" />
+            </div>
+            <div className="space-y-2">
+              <Label>DNI / Documento</Label>
+              <Input value={dni} onChange={e => setDni(e.target.value)} placeholder="Ej: 12345678" />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label>Email</Label>
             <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="paciente@email.com" />
-          </div>
-          <div className="space-y-2">
-            <Label>Teléfono</Label>
-            <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+52 55 1234 5678" />
           </div>
           <Button type="submit" className="w-full" disabled={createPatient.isPending}>
             {createPatient.isPending ? "Guardando..." : "Agregar Paciente"}

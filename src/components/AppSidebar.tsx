@@ -25,15 +25,15 @@ export function AppSidebar() {
   return (
     <aside className="hidden md:flex w-64 flex-col border-r border-border bg-card min-h-screen">
       <div className="p-6 border-b border-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg">D</span>
+          <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
+              D
+            </div>
+            <div className="flex flex-col gap-0.5 leading-none">
+              <span className="font-bold text-foreground">DentisFlow</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Gestión de citas</span>
+            </div>
           </div>
-          <div>
-            <h1 className="font-bold text-foreground text-lg leading-tight">DentFlow</h1>
-            <p className="text-xs text-muted-foreground">Gestión de citas</p>
-          </div>
-        </div>
       </div>
 
       <nav className="flex-1 p-4 space-y-1">

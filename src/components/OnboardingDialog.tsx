@@ -37,7 +37,7 @@ export default function OnboardingDialog({ open, onComplete }: OnboardingDialogP
     <Dialog open={open}>
       <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle className="text-xl">¡Bienvenido a DentFlow! 🦷</DialogTitle>
+          <DialogTitle className="text-xl">¡Bienvenido a DentisFlow! 🦷</DialogTitle>
           <DialogDescription>
             Configura tu clínica para comenzar a gestionar tus citas.
           </DialogDescription>

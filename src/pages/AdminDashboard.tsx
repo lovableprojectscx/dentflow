@@ -78,7 +78,7 @@ export default function AdminDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>Empresas Suscritas</CardTitle>
-          <CardDescription>Lista completa de las clínicas en DentFlow.</CardDescription>
+          <CardDescription>Lista completa de las clínicas en DentisFlow.</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (

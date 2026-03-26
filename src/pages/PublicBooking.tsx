@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, CheckCircle, Calendar, User, Phone, ArrowLeft, CreditCard } from "lucide-react";
+import { Clock, CheckCircle, Calendar, User, Phone, ArrowLeft, CreditCard, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -177,7 +177,7 @@ export default function PublicBooking() {
       <Sonner />
 
       <header className="border-b border-border bg-card">
-        <div className="max-w-2xl mx-auto px-4 py-5">
+        <div className="max-w-2xl mx-auto px-4 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">
@@ -191,6 +191,17 @@ export default function PublicBooking() {
               )}
             </div>
           </div>
+          {clinic.phone && (
+            <a 
+              href={`https://wa.me/${clinic.phone.replace(/[\D]/g, "")}`} 
+              target="_blank" 
+              rel="noreferrer"
+              className="hidden sm:flex items-center gap-1 text-xs text-success font-semibold hover:underline"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Consulta por WhatsApp
+            </a>
+          )}
         </div>
       </header>
 
@@ -351,6 +362,21 @@ export default function PublicBooking() {
           </p>
         </div>
       </footer>
+
+      {clinic.phone && (
+        <a 
+          href={`https://wa.me/${clinic.phone.replace(/[\D]/g, "")}`} 
+          target="_blank" 
+          rel="noreferrer"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-success text-success-foreground rounded-full flex items-center justify-center shadow-lg hover:bg-success/90 hover:scale-110 active:scale-95 transition-all z-50 group sm:bottom-8 sm:right-8"
+          aria-label="Contactar por WhatsApp"
+        >
+          <MessageCircle className="w-7 h-7" />
+          <span className="absolute right-full mr-3 bg-card border border-border px-3 py-1.5 rounded-lg text-sm text-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap hidden pointer-events-none md:block">
+            ¿Tienes dudas? Escríbenos
+          </span>
+        </a>
+      )}
     </div>
   );
 }

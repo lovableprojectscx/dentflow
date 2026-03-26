@@ -54,10 +54,7 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm space-y-6 animate-fade-in">
         <div className="text-center">
-          <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center mx-auto mb-4">
-            <span className="text-primary-foreground font-bold text-2xl">D</span>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">DentisFlow</h1>
+          <img src="/logo.png" alt="SmileFlow" className="h-12 w-auto mx-auto mb-4" />
           <p className="text-muted-foreground mt-2">Gestión inteligente para tu clínica dental</p>
           <p className="text-sm text-muted-foreground mt-1">
             {mode === "login" && "Inicia sesión en tu clínica"}

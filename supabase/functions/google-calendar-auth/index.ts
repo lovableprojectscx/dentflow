@@ -34,7 +34,7 @@ serve(async (req) => {
       throw new Error('Google OAuth credentials or Supabase keys not fully configured in Edge Function Secrets.')
     }
 
-    const REDIRECT_URI = `${url.origin}/functions/v1/google-calendar-auth`
+    const REDIRECT_URI = `${SUPABASE_URL}/functions/v1/google-calendar-auth`
     console.log(`Redirect URI: ${REDIRECT_URI}`)
 
     if (action === 'connect') {

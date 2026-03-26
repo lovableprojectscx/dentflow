@@ -46,6 +46,7 @@ serve(async (req) => {
         console.error('No authorization header found')
         throw new Error('No authorization header')
       }
+      const jwt = authHeader.replace('Bearer ', '')
       
       const supabase = createClient(
         SUPABASE_URL,
@@ -53,14 +54,10 @@ serve(async (req) => {
         { global: { headers: { Authorization: authHeader } } }
       )
       
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      if (userError) {
-        console.error('User auth error:', userError)
-        throw new Error(`Unauthorized: ${userError.message}`)
-      }
-      if (!user) {
-        console.error('No user found in session')
-        throw new Error('Unauthorized: No user found')
+      const { data: { user }, error: userError } = await supabase.auth.getUser(jwt)
+      if (userError || !user) {
+        console.error('USER FETCH ERROR:', userError)
+        throw new Error(`Unauthorized: ${userError?.message || 'User session not found'}`)
       }
 
       console.log(`User authenticated: ${user.id}`)

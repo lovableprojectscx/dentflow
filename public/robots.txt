@@ -1,14 +1,9 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Block sensitive paths
+Disallow: /admin
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://dentflow-black.vercel.app/sitemap.xml

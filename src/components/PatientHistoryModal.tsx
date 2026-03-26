@@ -30,18 +30,8 @@ export function PatientHistoryModal({ patient, onClose }: PatientHistoryModalPro
   return (
     <Dialog open={!!patient} onOpenChange={(v) => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col">
-        <DialogHeader className="flex flex-row items-center justify-between pr-8">
+        <DialogHeader>
           <DialogTitle>Historial del Paciente</DialogTitle>
-          {patient && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              onClick={() => setEditOpen(true)}
-            >
-              <Pencil className="w-4 h-4" />
-            </Button>
-          )}
         </DialogHeader>
 
         {patient && (
@@ -79,9 +69,20 @@ export function PatientHistoryModal({ patient, onClose }: PatientHistoryModalPro
                   )}
                 </div>
               </div>
-              <div className="text-right shrink-0">
-                <p className="text-xs text-muted-foreground">Total citas</p>
-                <p className="text-xl font-bold text-foreground">{appointments.length}</p>
+              <div className="text-right shrink-0 flex flex-col items-end gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 px-2 gap-1.5 text-xs text-muted-foreground hover:text-foreground border-muted-foreground/20"
+                  onClick={() => setEditOpen(true)}
+                >
+                  <Pencil className="w-3 h-3" />
+                  Editar
+                </Button>
+                <div>
+                  <p className="text-xs text-muted-foreground">Total citas</p>
+                  <p className="text-xl font-bold text-foreground leading-none">{appointments.length}</p>
+                </div>
               </div>
             </div>
 

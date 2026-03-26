@@ -82,6 +82,9 @@ export type Database = {
           email_reminder: boolean | null
           id: string
           opening_time: string | null
+          payment_bcp: string | null
+          payment_plin: string | null
+          payment_yape: string | null
           phone: string | null
           sms_reminder: boolean | null
           timezone: string
@@ -97,6 +100,9 @@ export type Database = {
           email_reminder?: boolean | null
           id?: string
           opening_time?: string | null
+          payment_bcp?: string | null
+          payment_plin?: string | null
+          payment_yape?: string | null
           phone?: string | null
           sms_reminder?: boolean | null
           timezone?: string
@@ -112,6 +118,9 @@ export type Database = {
           email_reminder?: boolean | null
           id?: string
           opening_time?: string | null
+          payment_bcp?: string | null
+          payment_plin?: string | null
+          payment_yape?: string | null
           phone?: string | null
           sms_reminder?: boolean | null
           timezone?: string

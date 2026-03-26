@@ -37,10 +37,10 @@ export default function SettingsPage() {
       setOpeningTime(settings.opening_time ?? "08:00");
       setClosingTime(settings.closing_time ?? "18:00");
       setWorkingDays(settings.working_days ?? [true, true, true, true, true, true, false]);
-      setTimezone((settings as any).timezone ?? "America/Lima");
-      setPaymentBcp((settings as any).payment_bcp ?? "");
-      setPaymentYape((settings as any).payment_yape ?? "");
-      setPaymentPlin((settings as any).payment_plin ?? "");
+      setTimezone(settings.timezone ?? "America/Lima");
+      setPaymentBcp(settings.payment_bcp ?? "");
+      setPaymentYape(settings.payment_yape ?? "");
+      setPaymentPlin(settings.payment_plin ?? "");
     }
   }, [settings]);
 
@@ -90,7 +90,7 @@ export default function SettingsPage() {
         payment_bcp: paymentBcp,
         payment_yape: paymentYape,
         payment_plin: paymentPlin,
-      } as any);
+      });
       toast.success("Configuración guardada");
     } catch (error: any) {
       toast.error(error.message);

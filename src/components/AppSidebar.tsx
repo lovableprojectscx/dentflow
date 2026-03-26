@@ -27,10 +27,10 @@ export function AppSidebar() {
       <div className="p-6 border-b border-border">
           <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-              D
+              S
             </div>
             <div className="flex flex-col gap-0.5 leading-none">
-              <span className="font-bold text-foreground">DentisFlow</span>
+              <span className="font-bold text-foreground">SmileFlow</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Gestión de citas</span>
             </div>
           </div>

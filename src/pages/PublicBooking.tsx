@@ -300,7 +300,7 @@ export default function PublicBooking() {
       <footer className="border-t border-border mt-16">
         <div className="max-w-2xl mx-auto px-4 py-4 text-center">
           <p className="text-xs text-muted-foreground">
-            Powered by <span className="font-semibold text-primary">DentisFlow</span>
+            Powered by <span className="font-semibold text-primary">SmileFlow</span>
           </p>
         </div>
       </footer>

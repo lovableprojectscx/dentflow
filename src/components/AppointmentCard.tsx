@@ -24,6 +24,7 @@ interface AppointmentCardProps {
   date?: string;
   source?: string;
   notes?: string | null;
+  paymentStatus?: string;
   onConfirm?: (id: string) => void;
   onCancel?: (id: string) => void;
 }
@@ -39,6 +40,7 @@ export function AppointmentCard({
   date,
   source,
   notes,
+  paymentStatus,
   onConfirm,
   onCancel,
 }: AppointmentCardProps) {

@@ -22,7 +22,7 @@ serve(async (req) => {
     const GOOGLE_CLIENT_SECRET = Deno.env.get('GOOGLE_CLIENT_SECRET')
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
     const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')
-    const FRONTEND_URL = Deno.env.get('FRONTEND_URL') || 'http://localhost:8080'
+    const FRONTEND_URL = 'https://dentflow-black.vercel.app'
 
     console.log('Checking secrets...')
     if (!GOOGLE_CLIENT_ID) console.error('MISSING: GOOGLE_CLIENT_ID')

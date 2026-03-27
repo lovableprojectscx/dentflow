@@ -61,6 +61,12 @@ export function EditAppointmentDialog({ open, onClose, appointment }: EditAppoin
   const remove = useDeleteAppointment();
 
   const handleSave = async () => {
+    const selectedDateTime = new Date(`${date}T${time}:00`);
+    if ((date !== appointment.date || time !== appointment.time.slice(0, 5)) && selectedDateTime < new Date()) {
+      toast.error("No se puede reprogramar la cita para una fecha u hora en el pasado");
+      return;
+    }
+
     try {
       await update.mutateAsync({ id: appointment.id, date, time, type, duration: parseInt(duration), status, notes: notes || null });
       toast.success("Cita actualizada");

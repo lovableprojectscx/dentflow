@@ -47,6 +47,12 @@ export function NewAppointmentDialog({
       return;
     }
 
+    const selectedDateTime = new Date(`${date}T${time}:00`);
+    if (selectedDateTime < new Date()) {
+      toast.error("No se puede agendar una cita en el pasado");
+      return;
+    }
+
     try {
       await createAppointment.mutateAsync({
         patient_id: patientId,
@@ -63,6 +69,8 @@ export function NewAppointmentDialog({
       toast.error(error.message);
     }
   };
+
+  const todayStr = new Date().toISOString().split("T")[0];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -91,7 +99,7 @@ export function NewAppointmentDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Fecha</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} />
+              <Input type="date" min={todayStr} value={date} onChange={e => setDate(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>Hora</Label>

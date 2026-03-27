@@ -327,14 +327,16 @@ export default function PublicBooking() {
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                   {allSlots.map(slot => {
                     const occupied = isSlotOccupied(slot, bookedSlots);
+                    const isPast = new Date(`${selectedDate}T${slot}:00`) < new Date();
+                    const disabled = occupied || isPast;
                     return (
                       <button
                         key={slot}
-                        disabled={occupied}
+                        disabled={disabled}
                         onClick={() => handleSelectTime(slot)}
                         className={cn(
                           "py-3 rounded-xl text-sm font-semibold border transition-all",
-                          occupied
+                          disabled
                             ? "bg-muted text-muted-foreground border-border cursor-not-allowed opacity-50 line-through"
                             : "bg-card text-foreground border-border hover:border-primary hover:bg-primary/5 hover:text-primary active:scale-95"
                         )}

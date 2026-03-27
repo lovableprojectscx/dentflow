@@ -42,7 +42,7 @@ export default function Schedule() {
     });
   }
 
-  const available = allSlots.filter(s => !isSlotOccupied(s)).length;
+  const available = allSlots.filter(s => !isSlotOccupied(s) && new Date(`${selectedDate}T${s}:00`) > new Date()).length;
   const booked = allSlots.filter(s => isSlotOccupied(s)).length;
 
   // Check if selected day is a working day
@@ -84,14 +84,21 @@ export default function Schedule() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {allSlots.map(slot => {
             const isBooked = isSlotOccupied(slot);
+            const isPast = new Date(`${selectedDate}T${slot}:00`) < new Date();
+            const isDisabled = isBooked || isPast;
+            
             return (
               <div key={slot} className={cn(
                 "flex items-center gap-2 p-3 rounded-lg border transition-all",
-                isBooked ? "border-border bg-muted/50 opacity-60" : "border-success/30 bg-success/5"
+                isDisabled ? "border-border bg-muted/50 opacity-60" : "border-success/30 bg-success/5"
               )}>
-                <Clock className={cn("w-4 h-4 shrink-0", isBooked ? "text-muted-foreground" : "text-success")} />
-                <span className={cn("font-medium text-sm tabular-nums", isBooked ? "text-muted-foreground" : "text-foreground")}>{slot}</span>
-                {isBooked && <span className="text-xs text-muted-foreground ml-auto">Ocupado</span>}
+                <Clock className={cn("w-4 h-4 shrink-0", isDisabled ? "text-muted-foreground" : "text-success")} />
+                <span className={cn("font-medium text-sm tabular-nums", isDisabled ? "text-muted-foreground line-through" : "text-foreground")}>{slot}</span>
+                {isBooked ? (
+                  <span className="text-xs text-muted-foreground ml-auto">Ocupado</span>
+                ) : isPast ? (
+                  <span className="text-xs text-muted-foreground ml-auto">Expirado</span>
+                ) : null}
               </div>
             );
           })}
